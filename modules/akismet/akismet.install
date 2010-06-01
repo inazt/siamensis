@@ -1,0 +1,158 @@
+<?php
+// $Id: akismet.install,v 1.5 2008/05/26 23:39:16 drewish Exp $
+
+/**
+ * Implementation of hook_schema().
+ */
+function akismet_schema() {
+  $schema['akismet_spam_marks'] = array(
+    'fields' => array(
+      'content_type' => array(
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'content_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'spam_created' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'hostname' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'mail' => array(
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'unique key' => array(
+      'content' => array('content_type', 'content_id'),
+    ),
+    'indexes' => array(
+      'spam_created' => array('spam_created'),
+      'hostname' => array('hostname'),
+      'mail' => array('mail'),
+    ),
+  );
+  $schema['akismet_moderator'] = array(
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'email_for' => array(
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('uid'),
+    'indexes' => array(
+      'email_for' => array('email_for'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function akismet_install() {
+  drupal_install_schema('akismet');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function akismet_uninstall() {
+  drupal_uninstall_schema('akismet');
+  variable_del('akismet_wpapikey');
+  variable_del('akismet_connection_enabled');
+  variable_del('akismet_connection_timeout');
+  variable_del('akismet_remove_spam_age');
+  variable_del('akismet_records_per_page');
+  variable_del('akismet_blocks_counter');
+  variable_del('akismet_email_enabled');
+  variable_del('akismet_check_nodetypes');
+  variable_del('akismet_node_publish_links');
+  variable_del('akismet_node_spam_links');
+  variable_del('akismet_check_comments');
+  variable_del('akismet_comment_publish_links');
+  variable_del('akismet_comment_spam_links');
+  variable_del('akismet_counter_since');
+  variable_del('akismet_counter_date_format');
+  variable_del('akismet_antispambot_delay');
+  variable_del('akismet_antispambot_rules');
+  variable_del('akismet_antispambot_action');
+}
+
+/**
+ * Update 1: Add table for moderator extensions.
+ */
+function akismet_update_1() {
+  $schema['akismet_moderator'] = array(
+    'field' => array(
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'email_for' => array(
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('uid'),
+    'indexes' => array(
+      'email_for' => array('email_for'),
+    ),
+  );
+
+  $ret = array();
+  db_create_table($ret, 'akismet_moderator', $schema['akismet_moderator']);
+  return $ret;
+}
+
+/**
+ * Update 2: Add columns hostname and mail to {akismet_spam_marks} table.
+ */
+function akismet_update_2() {
+  $ret = array();
+
+  db_add_field($ret, 'akismet_spam_marks', 'hostname', array(
+    'type' => 'varchar',
+    'length' => 128,
+    'not null' => TRUE,
+    'default' => '',
+  ));
+  db_add_index($ret, 'akismet_spam_marks', 'hostname', array('hostname'));
+
+  db_add_field($ret, 'akismet_spam_marks', 'mail', array(
+    'type' => 'varchar',
+    'length' => 128,
+    'not null' => TRUE,
+    'default' => '',
+  ));
+  db_add_index($ret, 'akismet_spam_marks', 'mail', array('mail'));
+
+  return $ret;
+}
