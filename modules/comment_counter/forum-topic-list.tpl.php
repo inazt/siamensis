@@ -33,7 +33,7 @@
  * @see theme_forum_topic_list()
  */
 ?>
-<b>this is a book</b>
+<h1>this is a book</h1>
 <table id="forum-topic-<?php print $topic_id; ?>">
   <thead>
     <tr><?php print $header; ?></tr>
