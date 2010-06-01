@@ -1,0 +1,10 @@
+<?php
+function comment_counter_theme(){
+  return array(
+    'forum_topic_list' => array(
+      'template' => 'forum-topic-list',
+      'arguments' => array('tid' => NULL, 'topics' => NULL, 'sortby' => NULL, 'forum_per_page' => NULL),
+    ),    
+  );
+  
+}

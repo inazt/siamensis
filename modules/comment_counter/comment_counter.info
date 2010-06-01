@@ -1,0 +1,4 @@
+name=Comment Counter for Forum
+description = "Count how many comment na eiei"
+core=6.x
+version=0.1a
