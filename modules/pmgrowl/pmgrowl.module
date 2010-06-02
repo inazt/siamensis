@@ -1,0 +1,158 @@
+<?php
+// $Id: pmgrowl.module,v 1.7 2009/06/17 00:25:35 daveingram Exp $
+
+/**
+ * @file
+ * pmgrowl provides private message received notifications using the jGrowl jQuery plugin
+ */
+
+/**
+ * Implementation of hook_init().
+ */
+function pmgrowl_init() {
+  if (user_access('read privatemsg')) {
+    // Add required files
+    drupal_add_css(drupal_get_path('module', 'pmgrowl') .'/jgrowl/jquery.jgrowl.css');
+    drupal_add_js(drupal_get_path('module', 'pmgrowl') .'/jgrowl/jquery.jgrowl_minimized.js', 'footer');
+    drupal_add_js(drupal_get_path('module', 'pmgrowl') .'/pmgrowl.js', 'footer');
+  
+    // Pass in the interval for checking messages. Multiply by 1000 to move to milliseconds instead of seconds
+    drupal_add_js(array('pmGrowlInterval' => variable_get('pmgrowl_interval', 30) * 1000), 'setting');
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function pmgrowl_menu() {
+  $items['admin/settings/messages/pmgrowl'] = array(
+      'title' => 'Growl notifications',
+      'description' => 'Change the notification settings for private message alerts',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('pmgrowl_admin_settings'),
+      'access arguments' => array('administer site configuration'),
+      'type' => MENU_LOCAL_TASK,
+      );
+  $items['messages/pmgrowl_json'] = array(
+      'access callback' => 'user_access',
+      'access arguments' => array('read privatemsg'),
+      'page callback' => 'pmgrowl_json',
+      'type' => MENU_CALLBACK,
+      );
+  $items['messages/pmgrowl_close'] = array(
+      'page callback' => 'pmgrowl_close',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+      );
+  return $items;
+}
+
+/**
+ * Callback function to store a user's request to close a message alert
+ */
+function pmgrowl_close() {
+  global $user;
+
+  if(variable_get('pmgrowl_operating_mode', 0) == 0) {
+    // build a record to write to the database to signify this message has been closed by the user
+    $table = 'pmgrowl_close';
+    $record = new stdClass();
+    $record->mid = $_POST['mid'];
+    $record->uid = $user->uid;
+    $record->closed = 1;
+
+    if(drupal_write_record($table, $record)) {
+      echo 'message closed';
+    } else {
+      echo 'ERROR: unable to close message';
+    }
+  } else {
+    db_query("UPDATE {pmgrowl_close} SET closed = 1 WHERE uid = %s", $user->uid);
+  }
+
+  exit();
+}
+
+/**
+ * Callback function for retrieving new messages in json format
+ */
+function pmgrowl_json() {
+  global $user;
+
+  // This query collects all messages that are new, and have not been closed
+  $query = 'SELECT * FROM {pm_index} i LEFT JOIN {pm_message} m ON m.mid = i.mid ';
+  $query .= 'WHERE (i.uid = %d AND i.is_new = 1) AND i.mid NOT IN (SELECT mid FROM {pmgrowl_close} WHERE uid = %d and closed = 1) ';
+  $query .= 'ORDER BY m.timestamp ASC';
+
+  $result = db_query($query, $user->uid, $user->uid);
+
+  $data = array();
+
+  // for every message that comes back
+  while ($row = db_fetch_object($result)) {
+    // check the operating mode, and return a message accordingly
+    if(variable_get('pmgrowl_operating_mode', 0) == 0) {
+        $row->body = check_markup(truncate_utf8($row->body, 400, FALSE, TRUE));
+        $row->body .= '<p>'. l(t('Open & Reply'), 'messages/view/'. $row->thread_id);
+        $row->body .= ' | '. l(t('View All'), 'messages') .'</p>';
+        $data[] = $row;
+    } else {
+      $message['subject'] = 'You have Mail!';
+      $message['body'] = 'You have '. l(t('unread messages'), 'messages');
+      $data[0] = $message;
+
+      // now mark all of these messages as closed so that there isn't a popup on subsequent messages
+      if (variable_get('pmgrowl_persistence', 0) == 0) {
+        $table = 'pmgrowl_close';
+        $record = new stdClass();
+        $record->mid = $row->mid;
+        $record->uid = $row->uid;
+        $record->closed = 1;
+        drupal_write_record($table, $record);
+      }
+    }
+  }
+
+  drupal_json($data);
+}
+
+/**
+ * Form builder. Configure pmgrowl settings.
+ *
+ * @ingroup forms
+ * @see system_settings_form()
+ */
+function pmgrowl_admin_settings() {
+  $form['pmgrowl_interval'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Check message interval'),
+      '#default_value' => variable_get('pmgrowl_interval', 30),
+      '#description' => t('Choose the number of seconds between checks for new messages. Set this to 0 if you only want to check for new messages when the page first loads.'),
+      );
+  $form['pmgrowl_operating_mode'] = array(
+      '#type' => 'radios',
+      '#default_value' => variable_get('pmgrowl_operating_mode', 0),
+      '#options' => array(t('Individual Messages'), t('New Message alert')),
+      '#title' => t('Operating Mode'),
+      '#description' => t('Choose the way messages should be alerted. Individual Messages mode will give you every new message that comes in. New Message alert will just give a notification that there are new messages.'),
+      );
+  $form['pmgrowl_persistence'] = array(
+      '#type' => 'radios',
+      '#default_value' => variable_get('pmgrowl_persistence', 0),
+      '#options' => array(t('One time'), t('Close manually')),
+      '#title' => t('Message persistence'),
+      '#description' => t('<em>This setting only applies to Operating mode "New Message alert".</em> If you choose "One time", then the message will appear only once. "Close manually" means that the message will continue to appear every time a page is loaded until the user closes it themselves.'),
+      );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Validate the pmgrowl settings configuration form.
+ */
+function pmgrowl_admin_settings_validate($form, $form_state) {
+  $interval = $form_state['values']['pmgrowl_interval'];
+  if (!is_numeric($interval)) {
+    form_set_error('pmgrowl_interval', t('Please enter a number.'));
+  }
+}
