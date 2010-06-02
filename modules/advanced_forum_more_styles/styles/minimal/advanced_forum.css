@@ -1,0 +1,153 @@
+/* $Id: advanced_forum.css,v 1.3 2009/07/30 06:07:33 eigentor Exp $ */ 
+
+.post-info {
+  border-bottom:2px solid #F7F5EE;
+  border-top:1px solid #CCCCCC;
+  font-size: 0.93em;
+  color: #999;
+}
+ul.forum-links {
+margin:0px 10px;
+}
+ul.forum-links li {
+list-style-type: none;
+list-style-image: none;
+}
+div.forum-post-panel-main,
+div.forum-post-links {
+  border-left:1px solid #e5e5e5;
+}
+div.author-pane {
+  font-size: 0.93em;
+  color: #555;
+}
+
+span.author-pane-label {
+ color: #555555;
+ font-weight: bold;
+}
+
+.author-pane-name-status .picture img {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+/*** FORUM LIST ******************************************************/
+
+#forum tr.container td {
+  background: #7FBDEF;
+}
+
+#forum tr.odd,
+#forum tr.even
+ {
+  border: 1px solid #ddd;
+}
+#forum tr.even {
+  background: #eee;
+}
+#forum tr.odd {
+  background: #fff;
+}
+#forum tr.even.container,
+#forum tr.odd.container {
+  border: 1px solid #76A3F0;
+}
+tr.container a,
+#content tr.container a
+ {
+  color: white;
+  font-weight: bold;
+}
+
+div#forum-statistics {
+  border: 1px solid #ddd;
+  font-size: 0.93em;
+  color: #666;
+}
+.forum-folder-legend,
+.forum-topic-legend {
+  font-size: 0.8em;
+  color: #777;
+}
+.forum-folder-legend dt {
+  float: left;
+  padding-right: 10px;
+}
+.forum-folder-legend dd{
+  float: left;
+  width: 100px;
+  line-height: 1.4;
+}
+
+div#forum-statistics-active-header,
+div#forum-statistics-statistics-header {
+  background: #eee;
+}
+
+/*** TOPIC LIST ******************************************************/
+
+table.forum-topics th,
+table.forum-table th {
+  background: #7FBDEF;
+  padding:3px 5px 3px 5px;
+  font-size: 0.93em;
+}
+#forum table.forum-table.forums-overview th {
+  background: #fff;
+  padding:3px 5px 3px 5px;
+  font-size: 0.93em;
+  color: #494949;
+}
+#forum table.forum-table.forum-overview th a {
+  color: black;
+}
+
+table.forum-table th
+table.forum-topics td {
+  padding: 0.3em;
+}
+#forum table.forum-topics th,
+#forum table.forum-topics th a,
+#forum table.forum-table th,
+#forum table.forum-table th a {
+  color: white;
+}
+
+.forum-topic-legend img,
+.forum-folder-legend img {
+  -moz-opacity:.65; 
+  filter:alpha(opacity=65); 
+  opacity:.65;
+}
+.forum-topic-legend dl {
+  clear: left;
+  display: block;
+  padding: 6px 0;
+}
+.forum-topic-legend dt,
+.forum-topic-legend dd {
+  float: left;
+}
+.forum-topic-legend dd {
+  padding-left: 10px;
+  width: 90px;
+  line-height: 1.4;
+}
+.forum-topic-legend div.legend-group {
+  padding-right: 20px;
+}
+/*** THREAD ***********************************************************/
+div.post-title {
+  font-weight: bold;
+}
+li.topic_reply.first.last,
+li.comment_add.first.last
+ {
+  list-style-type: none;
+  list-style-image: none;
+  background: none;
+  padding-bottom: 5px;
+}
+
+
+

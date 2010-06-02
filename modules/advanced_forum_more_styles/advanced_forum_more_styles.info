@@ -1,0 +1,13 @@
+; $Id: advanced_forum_more_styles.info,v 1.1 2009/07/15 00:55:48 eigentor Exp $
+name = Advanced Forum More Styles
+description = Additional Advanced Forum Styles
+version = "Version"
+dependencies[] = advanced_forum
+core = 6.x
+
+; Information added by drupal.org packaging script on 2009-07-30
+version = "6.x-1.0-alpha2"
+core = "6.x"
+project = "advanced_forum_more_styles"
+datestamp = "1248935418"
+
