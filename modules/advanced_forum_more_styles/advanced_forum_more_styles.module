@@ -1,0 +1,12 @@
+<?php
+// $Id: advanced_forum_more_styles.module,v 1.1 2009/07/15 00:55:48 eigentor Exp $ 
+
+function advanced_forum_more_styles_advforum_styles() {
+  $items = array();
+  $items['minimal'] = array(
+    'directory' => 'styles/minimal',
+  );
+
+  return $items;
+}
+
