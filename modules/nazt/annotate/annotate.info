@@ -1,0 +1,9 @@
+; $Id$
+name = NAzT Annotate
+description = Annotate module (first module)
+core = 6.x
+dependencies[] = forum
+dependencies[] = taxonomy
+package = "NAzT's module"
+php = 5.2
+
