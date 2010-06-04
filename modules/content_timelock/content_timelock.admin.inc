@@ -19,6 +19,16 @@ function content_timelock_admin_settings() {
     '#description' => t('error message for forumnakub'),
     '#default_value' => variable_get('content_timelock_error_message',t('Error pass 24 hours arleady ^^')),
   );
+  $form['content_timelock_warning_message'] = array(
+    '#type'=>'textfield',
+    '#title' => t('Set Warning timelock message for forum'),
+    '#description' => t('Warning message for forumnakub'),
+    '#default_value' => variable_get('content_timelock_warning_message',t('You cant edit this topic after 24 hours ^^')),
+  );
+  
+  
+  
+  
   $form['content_timelock_admin_verbose'] = array(
       '#type' => 'checkbox',
       '#title' => t('Show lock / unlock messages'),

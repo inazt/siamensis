@@ -124,6 +124,11 @@ function content_timelock_nodeapi(&$node, $op, $teaser, $page) {
     case 'update':
         content_timelock_release($node->nid, $user->uid);
       break;
+    case 'insert':
+      if($node->type=='forum'){
+        drupal_set_message(print_r(variable_get('content_timelock_warning_message',t('You cant edit this topic after 24 hours ^^')),1));
+      }
+      break;
     case 'delete':
       content_timelock_release($node->nid, NULL);
       break;
