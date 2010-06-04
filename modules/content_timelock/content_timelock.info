@@ -1,0 +1,12 @@
+; $Id: content_timelock.info,v 1.1.2.11 2010/04/18 12:39:20 eugenmayer Exp $
+name = Content locking (edit lock)
+description = Prevents users to edit the same node at the same time. The second user can enter the edit-mode and gets notified
+core = 6.x
+project = "content_timelock"
+package = "Prevent Editing"
+; Information added by drupal.org packaging script on 2010-04-18
+version = "6.x-1.0"
+core = "6.x"
+project = "content_timelock"
+datestamp = "1271594705"
+
