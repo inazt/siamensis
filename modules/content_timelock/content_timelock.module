@@ -636,3 +636,16 @@ function content_timelock_release_own_item($nid, $response = true) {
     }
   }
 }
+
+function content_timelock_preprocess_comment(&$variables) {
+  global $user;  
+  // 24 hours = 86400 secs
+  $have_access = in_array('moderator',array_values($user->roles) ) || $user->uid==1;
+  $diff_time = time()-$variables['comment']->timestamp;
+  if($have_access==false &&  variable_get('content_timelock_disable_alter_button',false)==true) {
+    $links = comment_links($variables['comment'], 1);
+    unset($links['comment_edit']);
+    unset($links['comment_delete']);
+    $variables['links']     = isset($links) ? theme('links', $links) : '';  
+  }
+}
