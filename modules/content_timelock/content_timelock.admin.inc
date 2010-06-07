@@ -27,6 +27,12 @@ function content_timelock_admin_settings() {
   );
   
   
+  $form['content_timelock_alter_button'] = array(
+     '#type' => 'checkbox',
+     '#title' => t('Hide edit/delete button k'),
+     '#description' => t('Hide edit/delete when content already locked'),
+     '#default_value' => variable_get('content_timelock_alter_button',true)
+  );
   
   
   $form['content_timelock_admin_verbose'] = array(
